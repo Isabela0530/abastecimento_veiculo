@@ -1,4 +1,4 @@
-# Abastecimento de Veículos ⛽
+# Abastecimento de Veículos 
 
 Aplicação web responsiva desenvolvida para registrar e acompanhar o histórico de abastecimentos de um veículo, calculando automaticamente o preço médio por litro e o consumo médio em km/L.
 
