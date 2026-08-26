@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Abastecimento de Veículos</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header>
+
+        <div>
+            <h1>⛽ Abastecimento</h1>
+            <p>Histórico e consumo do veículo</p>
+        </div>
+
+        <button id="btnTema" onclick="alternarTema()">
+            🌙
+        </button>
+
+    </header>
+
+
+    <main>
+
+        <!-- RESUMO -->
+
+        <section class="resumo">
+
+            <div class="resumo-card">
+
+                <span>💰</span>
+
+                <div>
+                    <p>Preço médio/L</p>
+                    <h2 id="precoMedio">
+                        R$ 0,00
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="resumo-card">
+
+                <span>🚗</span>
+
+                <div>
+                    <p>Consumo médio</p>
+                    <h2 id="consumoMedio">
+                        0,00 km/L
+                    </h2>
+                </div>
+
+            </div>
+
+
+            <div class="resumo-card">
+
+                <span>⛽</span>
+
+                <div>
+                    <p>Total abastecido</p>
+                    <h2 id="totalLitros">
+                        0,00 L
+                    </h2>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CADASTRO -->
+
+        <section class="card">
+
+            <h2>Novo abastecimento</h2>
+
+            <p>
+                Registre os dados do abastecimento do veículo.
+            </p>
+
+
+            <form id="formAbastecimento">
+
+                <div class="form-grid">
+
+
+                    <div class="campo">
+
+                        <label for="data">
+                            Data
+                        </label>
+
+                        <input
+                            type="date"
+                            id="data"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="combustivel">
+                            Combustível
+                        </label>
+
+                        <select
+                            id="combustivel"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione
+                            </option>
+
+                            <option value="Gasolina">
+                                Gasolina
+                            </option>
+
+                            <option value="Etanol">
+                                Etanol
+                            </option>
+
+                            <option value="Diesel">
+                                Diesel
+                            </option>
+
+                            <option value="GNV">
+                                GNV
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="litros">
+                            Litros
+                        </label>
+
+                        <input
+                            type="number"
+                            id="litros"
+                            min="0.1"
+                            step="0.01"
+                            placeholder="Ex: 40"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="valor">
+                            Valor pago (R$)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="valor"
+                            min="0"
+                            step="0.01"
+                            placeholder="Ex: 250"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="quilometragem">
+                            Quilometragem (km)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="quilometragem"
+                            min="0"
+                            step="1"
+                            placeholder="Ex: 50000"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-principal"
+                >
+                    + Adicionar abastecimento
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- HISTÓRICO -->
+
+        <section class="card">
+
+            <div class="titulo-secao">
+
+                <div>
+
+                    <h2>
+                        Histórico de abastecimentos
+                    </h2>
+
+                    <p id="totalRegistros">
+                        0 abastecimentos
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="btn-perigo"
+                    onclick="limparTudo()"
+                >
+                    Limpar tudo
+                </button>
+
+            </div>
+
+
+            <div
+                id="listaAbastecimentos"
+                class="lista"
+            >
+            </div>
+
+        </section>
+
+
+        <!-- GRÁFICO -->
+
+        <section class="card">
+
+            <h2>
+                Comparativo dos abastecimentos
+            </h2>
+
+            <p>
+                Comparação entre preço por litro e consumo do veículo.
+            </p>
+
+
+            <div class="grafico-container">
+
+                <canvas id="graficoAbastecimento"></canvas>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MODAL DE EDIÇÃO -->
+
+    <div
+        id="modal"
+        class="modal"
+    >
+
+        <div class="modal-conteudo">
+
+            <div class="modal-header">
+
+                <h2>
+                    Editar abastecimento
+                </h2>
+
+                <button
+                    class="btn-fechar"
+                    onclick="fecharModal()"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="formEditar">
+
+                <input
+                    type="hidden"
+                    id="editarId"
+                >
+
+
+                <div class="campo">
+
+                    <label for="editarData">
+                        Data
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editarData"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="editarCombustivel">
+                        Combustível
+                    </label>
+
+                    <select
+                        id="editarCombustivel"
+                        required
+                    >
+
+                        <option value="Gasolina">
+                            Gasolina
+                        </option>
+
+                        <option value="Etanol">
+                            Etanol
+                        </option>
+
+                        <option value="Diesel">
+                            Diesel
+                        </option>
+
+                        <option value="GNV">
+                            GNV
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="editarLitros">
+                        Litros
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editarLitros"
+                        min="0.1"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="editarValor">
+                        Valor pago (R$)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editarValor"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="editarQuilometragem">
+                        Quilometragem (km)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editarQuilometragem"
+                        min="0"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn-principal"
+                >
+                    Salvar alterações
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
